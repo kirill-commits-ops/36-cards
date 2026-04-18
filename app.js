@@ -422,8 +422,9 @@
         </header>
 
         <div class="card-stack" id="cardStack">
-          ${renderCardEl(i, "current")}
+          ${i - 1 >= 0 ? renderCardEl(i - 1, "prev") : ""}
           ${i + 1 < TOTAL ? renderCardEl(i + 1, "next") : ""}
+          ${renderCardEl(i, "current")}
         </div>
 
         <footer class="footbar">
@@ -436,7 +437,7 @@
 
     const stack = root.querySelector("#cardStack");
     const current = stack.querySelector(".card.is-current");
-    attachSwipe(current);
+    attachSwipe(current, stack);
 
     root.querySelector('[data-action="next"]').addEventListener("click", () => goNext("button"));
     root.querySelector('[data-action="prev"]').addEventListener("click", () => goPrev("button"));
@@ -464,7 +465,7 @@
     `;
   }
 
-  function attachSwipe(el) {
+  function attachSwipe(el, stack) {
     if (!el) return;
     let startX = 0;
     let startY = 0;
@@ -475,6 +476,7 @@
     const threshold = 90;
     const lockAxisAt = 8;
     let axisLocked = null; // null | "x" | "y"
+    let peekDir = 0; // which neighbor is currently shown under the card
 
     const onDown = (ev) => {
       if (ev.pointerType === "mouse" && ev.button !== 0) return;
@@ -500,6 +502,12 @@
         const rot = dx / 25;
         el.style.transform = `translateX(${dx}px) rotate(${rot}deg)`;
         el.style.opacity = String(1 - Math.min(Math.abs(dx) / 400, 0.4));
+        const dir = dx < 0 ? -1 : dx > 0 ? 1 : 0;
+        if (dir !== peekDir && stack) {
+          peekDir = dir;
+          stack.classList.toggle("peek-next", dir < 0);
+          stack.classList.toggle("peek-prev", dir > 0);
+        }
       }
     };
     const finish = (ev) => {
@@ -518,6 +526,10 @@
       } else {
         el.style.transform = "";
         el.style.opacity = "";
+        if (stack) {
+          stack.classList.remove("peek-prev", "peek-next");
+          peekDir = 0;
+        }
       }
       pointerId = null;
     };
