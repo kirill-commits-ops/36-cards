@@ -26,7 +26,6 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--sans);
@@ -37,12 +36,22 @@ body {
   user-select: none;
 }
 
+/* Lock html and body to the actual viewport height. In iOS standalone
+   PWA mode `height: 100%` was producing a shorter container than the
+   viewport (likely because the html's containing block isn't what we
+   expect when the address bar is gone), so percentage / flex sizing
+   downstream couldn't fill the screen. */
+html,
 body {
-  background: var(--bg);
+  height: 100dvh;
   min-height: 100dvh;
+}
+
+body {
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
 }
 
 /* Full-bleed background layer. A fixed pseudo-element is immune to
