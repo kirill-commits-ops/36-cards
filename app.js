@@ -177,7 +177,13 @@
   let state = loadState();
 
   // ---------- Telegram integration ----------
-  const tg = window.Telegram?.WebApp;
+  // The SDK script loads on any page, so window.Telegram.WebApp always
+  // exists. `platform === "unknown"` means we're in a regular browser, not
+  // inside the Telegram client — in that case TG methods are silent no-ops
+  // and we should fall through to web fallbacks (Vibration API, iOS hack).
+  const rawTg = window.Telegram?.WebApp;
+  const inTelegram = !!rawTg && rawTg.platform && rawTg.platform !== "unknown";
+  const tg = inTelegram ? rawTg : null;
   if (tg) {
     try {
       tg.ready();
@@ -188,13 +194,47 @@
     } catch {}
   }
 
+  // iOS Safari has no Web Vibration API. Trick: a hidden <label> wrapping
+  // an <input type="checkbox" switch> plays a system haptic on click in
+  // iOS 17.4+ Safari (no-op on older iOS / non-Safari).
+  let iosHapticEl = null;
+  function ensureIosHapticEl() {
+    if (iosHapticEl) return iosHapticEl;
+    const label = document.createElement("label");
+    label.setAttribute("aria-hidden", "true");
+    label.style.cssText = "position:absolute;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.setAttribute("switch", "");
+    input.tabIndex = -1;
+    label.appendChild(input);
+    document.body.appendChild(label);
+    iosHapticEl = label;
+    return label;
+  }
+
   function haptic(kind) {
+    // 1) Telegram in-app haptics
     const hf = tg?.HapticFeedback;
-    if (!hf) return;
+    if (hf) {
+      try {
+        if (kind === "select") hf.selectionChanged();
+        else if (kind === "success") hf.notificationOccurred("success");
+        else hf.impactOccurred(kind || "light");
+        return;
+      } catch {}
+    }
+    // 2) Web Vibration API (Android Chrome, some Telegram WebViews)
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      try {
+        const ms = kind === "success" ? [10, 40, 10] : kind === "select" ? 5 : 12;
+        navigator.vibrate(ms);
+        return;
+      } catch {}
+    }
+    // 3) iOS Safari 17.4+ haptic via hidden switch input
     try {
-      if (kind === "select") hf.selectionChanged();
-      else if (kind === "success") hf.notificationOccurred("success");
-      else hf.impactOccurred(kind || "light");
+      ensureIosHapticEl().click();
     } catch {}
   }
 
