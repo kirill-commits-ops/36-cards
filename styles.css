@@ -278,7 +278,7 @@ html {
      which matters on iOS where the middle row can otherwise refuse to
      shrink/grow correctly with position:absolute descendants. */
   grid-template-rows: auto minmax(0, 1fr) auto;
-  padding-bottom: 24px;
+  padding-bottom: 8px;
 }
 .topbar {
   display: flex;
@@ -324,7 +324,7 @@ html {
 .card-stack {
   position: relative;
   min-height: 280px;
-  margin: 16px 0;
+  margin: 10px 0;
   perspective: 1200px;
 }
 .card {
