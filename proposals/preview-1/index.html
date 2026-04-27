@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DragonSword: Awakening — PR Proposal (Revised)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0a0a0f;
+    color: #e0e0e8;
+    line-height: 1.65;
+    padding: 0;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0f0c29 0%, #1a1a3e 40%, #24243e 100%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 60px 40px 50px;
+    text-align: center;
+  }
+  .hero .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7b6ff0;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .hero h1 span { color: #9b8aff; }
+  .hero .subtitle {
+    font-size: 15px;
+    color: #9898b0;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* Container */
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 32px 64px;
+  }
+
+  /* Meta row */
+  .meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .meta-item .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #6a6a80;
+    margin-bottom: 4px;
+  }
+  .meta-item .value {
+    font-size: 14px;
+    color: #c8c8d8;
+  }
+
+  /* Sections */
+  .section { margin-bottom: 36px; }
+  .section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 12px;
+    padding-left: 14px;
+    border-left: 3px solid #7b6ff0;
+  }
+  .section p {
+    font-size: 14px;
+    color: #b0b0c4;
+    margin-bottom: 12px;
+  }
+  .section a {
+    color: #9b8aff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(155,138,255,0.3);
+  }
+  .section a:hover { border-bottom-color: #9b8aff; }
+
+  /* Note callout */
+  .note {
+    background: rgba(123,111,240,0.06);
+    border: 1px solid rgba(123,111,240,0.18);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #c0c0d4;
+    line-height: 1.6;
+  }
+  .note strong { color: #e0e0f0; }
+
+  /* Two-tier package cards */
+  .tiers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .tier {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .tier.recommended {
+    border-color: rgba(123,111,240,0.35);
+    background: rgba(123,111,240,0.05);
+    position: relative;
+  }
+  .tier.recommended::after {
+    content: 'Best fit for May test';
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: #7b6ff0;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .tier .tier-name {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #7b6ff0;
+    margin-bottom: 8px;
+  }
+  .tier h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .tier .price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .tier .price-period {
+    font-size: 12px;
+    color: #8888a0;
+    margin-bottom: 16px;
+  }
+  .tier ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .tier ul li {
+    padding: 8px 0;
+    font-size: 13.5px;
+    color: #c0c0d4;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .tier ul li:last-child { border-bottom: none; }
+  .tier ul li .check {
+    flex-shrink: 0;
+    color: #7be0a0;
+    font-weight: 700;
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .tier ul li .dash {
+    flex-shrink: 0;
+    color: #555570;
+    font-weight: 700;
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .tier ul li.muted { color: #6a6a80; }
+
+  /* Comparison table */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 13.5px;
+  }
+  .compare th,
+  .compare td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .compare thead th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #8888a0;
+  }
+  .compare thead th:nth-child(2),
+  .compare thead th:nth-child(3) { text-align: center; }
+  .compare tbody td:nth-child(2),
+  .compare tbody td:nth-child(3) {
+    text-align: center;
+    font-weight: 600;
+  }
+  .compare tbody td:first-child {
+    color: #c8c8d8;
+  }
+  .compare .yes { color: #7be0a0; }
+  .compare .no { color: #555570; }
+  .compare tbody tr:hover { background: rgba(255,255,255,0.015); }
+
+  /* Path forward cards */
+  .paths {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .path-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 18px 18px;
+  }
+  .path-card .path-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #7b6ff0;
+    margin-bottom: 6px;
+  }
+  .path-card h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .path-card p {
+    font-size: 13px;
+    color: #a0a0b8;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .path-card .total {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #c8c8d8;
+  }
+  .path-card .total strong { color: #fff; font-weight: 700; }
+
+  /* Timeline */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .timeline-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 18px 14px;
+    text-align: center;
+  }
+  .timeline-card .month {
+    font-size: 13px;
+    font-weight: 600;
+    color: #9b8aff;
+    margin-bottom: 4px;
+  }
+  .timeline-card .phase {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6a6a80;
+    margin-bottom: 8px;
+  }
+  .timeline-card .desc {
+    font-size: 12.5px;
+    color: #a0a0b8;
+    line-height: 1.5;
+  }
+  .timeline-card.active {
+    border-color: rgba(123,111,240,0.3);
+    background: rgba(123,111,240,0.05);
+  }
+
+  /* Cancellation block */
+  .terms {
+    margin-top: 16px;
+    padding: 16px 18px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+    font-size: 13px;
+    color: #9898b0;
+    line-height: 1.6;
+  }
+  .terms strong { color: #c8c8d8; font-weight: 600; }
+
+  /* CTA */
+  .cta {
+    margin-top: 48px;
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(123,111,240,0.08), rgba(123,111,240,0.03));
+    border: 1px solid rgba(123,111,240,0.15);
+    border-radius: 14px;
+    text-align: center;
+  }
+  .cta h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .cta p {
+    font-size: 14px;
+    color: #9898b0;
+    margin-bottom: 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 12px;
+    color: #4a4a60;
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 40px 24px 36px; }
+    .hero h1 { font-size: 24px; }
+    .container { padding: 32px 20px 48px; }
+    .timeline { grid-template-columns: 1fr; }
+    .tiers { grid-template-columns: 1fr; }
+    .paths { grid-template-columns: 1fr; }
+    .meta { flex-direction: column; gap: 16px; }
+    .compare th, .compare td { padding: 10px 8px; font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="tag">Revised PR Proposal</div>
+  <h1>DragonSword: <span>Awakening</span></h1>
+  <p class="subtitle">Two ways to work together — a low-risk one-month test, or a full pre-launch & launch retainer</p>
+</div>
+
+<div class="container">
+
+  <div class="meta">
+    <div class="meta-item">
+      <div class="label">From</div>
+      <div class="value">Kirill Perevozchikov</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">For</div>
+      <div class="value">Sam Kang / Hound13</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Date</div>
+      <div class="value">April 27, 2026</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Game Launch</div>
+      <div class="value">June 2026</div>
+    </div>
+  </div>
+
+  <!-- Context -->
+  <div class="section">
+    <h2>Context</h2>
+    <p>Following our last call, we understand Hound13's runway is tight right now and committing to a full 3-month retainer upfront isn't realistic. To keep things low-risk, we've put together a smaller, one-off <strong>Distribution Test</strong> for May — focused purely on press release distribution to our Western media list. If the May results look promising, we can repeat the same package in June and July, or scale up to the full retainer.</p>
+    <p>
+      <a href="https://store.steampowered.com/app/4570720/DragonSword__Awakening/" target="_blank">Steam Store Page</a> &nbsp;·&nbsp;
+      <a href="https://www.youtube.com/watch?v=bvqGAuu-ZIM" target="_blank">Trailer</a>
+    </p>
+  </div>
+
+  <!-- Two options at a glance -->
+  <div class="section">
+    <h2>Two Options</h2>
+    <p>We've broken our offering into two clearly distinct packages so Hound13 can pick the level of investment that fits the current runway.</p>
+
+    <div class="tiers">
+      <div class="tier recommended">
+        <div class="tier-name">Option A · One-off</div>
+        <h3>Distribution Test</h3>
+        <div class="price">$5,000</div>
+        <div class="price-period">1-month, no commitment beyond the month</div>
+        <ul>
+          <li><span class="check">✓</span><span><strong>Press release drafting</strong> — English-language release written by us, ready to ship</span></li>
+          <li><span class="check">✓</span><span><strong>Distribution to 3,000 contacts</strong> from our Western gaming media list</span></li>
+          <li><span class="check">✓</span><span><strong>Detailed stats report</strong> — open rates, click-throughs, pickups, coverage tracking</span></li>
+          <li><span class="check">✓</span><span><strong>Monthly summary</strong> with recommendations for the next phase</span></li>
+          <li class="muted"><span class="dash">—</span><span>No PR strategy work</span></li>
+          <li class="muted"><span class="dash">—</span><span>No personal outreach to key contacts</span></li>
+        </ul>
+      </div>
+
+      <div class="tier">
+        <div class="tier-name">Option B · Retainer</div>
+        <h3>Full PR Engagement</h3>
+        <div class="price">$6,500–$7,000<span style="font-size:14px; color:#8888a0;"> / mo</span></div>
+        <div class="price-period">$6,500/mo on a 3-month commitment · $7,000/mo for 1–2 months</div>
+        <ul>
+          <li><span class="check">✓</span><span><strong>Everything in the Distribution Test</strong>, every month</span></li>
+          <li><span class="check">✓</span><span><strong>PR strategy</strong> — positioning, story angles, embargo & launch planning</span></li>
+          <li><span class="check">✓</span><span><strong>Personal email negotiations</strong> with key journalists, editors, and webzines</span></li>
+          <li><span class="check">✓</span><span><strong>Review-copy coordination</strong> and launch-day push</span></li>
+          <li><span class="check">✓</span><span><strong>Localized media outreach</strong> — additional distribution to German and French gaming press</span></li>
+          <li><span class="check">✓</span><span><strong>Coverage Clipping PDF book</strong> — polished end-of-engagement report of every placement secured</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side-by-side comparison -->
+  <div class="section">
+    <h2>What's the Real Difference?</h2>
+    <p>Both packages put DragonSword in front of Western gaming media. The Distribution Test is volume-based outreach — broadcast, fast, and measurable. The Full Engagement adds the strategic layer and the human relationships that turn pickups into <em>features</em>.</p>
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>Deliverable</th>
+          <th>Distribution Test<br><span style="font-weight:400; text-transform:none; letter-spacing:0;">$5,000</span></th>
+          <th>Full Engagement<br><span style="font-weight:400; text-transform:none; letter-spacing:0;">$6.5–7K / mo</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Press release drafted in English</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Distribution to 3,000-contact media list</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Stats report (opens, clicks, pickups)</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Monthly recommendations & next-phase plan</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Press kit, fact sheet, talking points</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>PR strategy & story angles</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>1:1 outreach to key journalists</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>Embargo & review-copy coordination</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>Feature placements & developer spotlights</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>Localized outreach (German & French press)</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>Coverage Clipping PDF book at end of engagement</td><td class="no">—</td><td class="yes">✓</td></tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:18px;"><strong>Plain-English version:</strong> the $5,000 test gets your news <em>in front of</em> 3,000 outlets. The full retainer adds the part where we personally talk those outlets into actually writing about it.</div>
+  </div>
+
+  <!-- Recommended path -->
+  <div class="section">
+    <h2>Recommended Path Forward</h2>
+    <p>Given the runway constraints, the cleanest path is to start with the Distribution Test in May and decide month-by-month from there. Here are the two ways the next three months can play out:</p>
+
+    <div class="paths">
+      <div class="path-card">
+        <div class="path-label">Path 1 · Stay light</div>
+        <h4>Three identical one-off tests</h4>
+        <p>Run the $5,000 Distribution Test in May, then again in June (launch) and July (post-launch). No commitment between months — Hound13 can stop after May if results don't justify continuing.</p>
+        <div class="total">Max total: <strong>$15,000</strong> across 3 months</div>
+      </div>
+      <div class="path-card">
+        <div class="path-label">Path 2 · Scale up after May</div>
+        <h4>Test in May, retainer for June + July</h4>
+        <p>Run the $5,000 Distribution Test in May. If results are promising, switch to the full retainer for June + July to maximize the launch window with hands-on outreach and embargo coordination.</p>
+        <div class="total">Total: <strong>$5,000 + $13,000–$14,000</strong> = $18,000–$19,000</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section">
+    <h2>Timeline</h2>
+    <div class="timeline">
+      <div class="timeline-card active">
+        <div class="month">May 2026</div>
+        <div class="phase">Test</div>
+        <div class="desc">Distribution Test — release drafted, sent to 3,000 contacts, stats report delivered end of month</div>
+      </div>
+      <div class="timeline-card">
+        <div class="month">June 2026</div>
+        <div class="phase">Launch</div>
+        <div class="desc">Repeat the test, or upgrade to full retainer for embargo coordination & 1:1 launch push</div>
+      </div>
+      <div class="timeline-card">
+        <div class="month">July 2026</div>
+        <div class="phase">Post-Launch</div>
+        <div class="desc">Final distribution wave with post-launch performance angles and a wrap-up report</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing summary -->
+  <div class="section">
+    <h2>Pricing Summary</h2>
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Per Month</th>
+          <th>Best For</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Distribution Test (one-off)</td>
+          <td>$5,000</td>
+          <td style="text-align:left; font-size:13px;">Low-risk first try, no commitment</td>
+        </tr>
+        <tr>
+          <td>Full Engagement (1–2 months)</td>
+          <td>$7,000</td>
+          <td style="text-align:left; font-size:13px;">Short-burst launch push</td>
+        </tr>
+        <tr>
+          <td>Full Engagement (3-month commit)</td>
+          <td>$6,500</td>
+          <td style="text-align:left; font-size:13px;">Best per-month rate, full coverage arc</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="terms">
+      <strong>Payment & terms:</strong> One-off Distribution Tests are invoiced and paid in full at the start of the month. Retainer months are invoiced on the 1st. Either party may terminate the retainer with 14 days' written notice — only fees for services rendered through the notice period are due, no further installments are charged.
+    </div>
+  </div>
+
+  <!-- Why -->
+  <div class="section">
+    <h2>Why This Works for Hound13</h2>
+    <p>DragonSword already has the product — years of development and $50M+ invested. The May Distribution Test is the cheapest possible way to see whether Western media will bite. If 3,000 contacts and a clean stats report turn into wishlists and inbound interest, we have proof. If they don't, you've spent $5,000 instead of $19,500 to find out — and we both move on with no hard feelings.</p>
+  </div>
+
+
+</div>
+
+<div class="footer">
+  Prepared by Kirill Perevozchikov · April 2026 · Revised in response to Hound13's runway feedback
+</div>
+
+</body>
+</html>
